@@ -86,9 +86,25 @@
 избежание заноса автомобиля при попадании колес одной оси на покрытия с разным
 коэффициентом сцепления.
 \begin{figure}
-  \centering
-  \includegraphics[width=0.5\textwidth]{ABS.jpg}
+	\centering
+	\begin{tikzpicture}
+		\node (ebu) [rectangle, fill=orange!30, minimum size = 1cm] {ЭБУ};
+		\node (w1) [circle, fill=black!90, xshift=-0.5cm, above left of=ebu] {};
+		\node (w2) [circle, fill=black!90, xshift=0.5cm, above right of=ebu] {};
+		\node (w3) [circle, fill=black!90, xshift=-0.5cm, below left of=ebu] {};
+		\node (w4) [circle, fill=black!90, xshift=0.5cm, below right of=ebu] {};
+		\draw[-] (w1) |- (ebu.170);
+		\draw[-] (w2) |- (ebu.10);
+		\draw[-] (w3) |- (ebu.190);
+		\draw[-] (w4) |- (ebu.350);
+	\end{tikzpicture}
   \caption{Антиблокировочная система.}
   \label{abs_img}
 \end{figure}
+%\begin{figure}
+%  \centering
+%  \includegraphics[width=0.5\textwidth]{ABS.jpg}
+%  \caption{Антиблокировочная система.}
+%  \label{abs_img}
+%\end{figure}
 
