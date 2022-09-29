@@ -101,10 +101,88 @@
   \caption{Антиблокировочная система.}
   \label{abs_img}
 \end{figure}
-%\begin{figure}
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{ABS.jpg}
-%  \caption{Антиблокировочная система.}
-%  \label{abs_img}
-%\end{figure}
+\par
+В соответствии с этой схемой модель АБС должна включать в себя четыре однотипных
+контура управления колесами (по одному на колесо). В каждом из таких контуров
+должны быть такие звенья, как колесо, датчик скорости вращения колеса, блок
+управления с гидравлическим модулятором, а также рабочий тормозной цилиндр
+(далее просто цилиндр) и колодки для передачи обратной связи на колесо.
+{\ttfamilyЗнать, что такое электромагнитная индукция}\par
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\node (K1) [circle, draw=black] {$К_{пл}$};
+		\node (kolodki1) [rectangle, above left of=K1, xshift=-0.5cm, draw=black] {колодки};
+		\node (cylinder1) [rectangle, above of=kolodki1, draw=black] {цилиндр};
+		\node (sensor1) [rectangle, above right of=K1, xshift=0.5cm, draw=black]
+			{датчик};
+
+		\node (K2) [circle, draw=black, below of = K1, yshift=-1cm] {$К_{пп}$};
+		\node (kolodki2) [rectangle, above left of=K2, xshift=-0.5cm, draw=black]
+			{колодки};
+		\node (cylinder2) [rectangle, above left of = kolodki2, draw=black,
+			xshift=-1.4cm] {цилиндр};
+		\node (sensor2) [rectangle, above right of=K2, xshift=0.5cm, draw=black]
+			{датчик};
+
+		\node (K3) [circle, draw=black, below of=K2, yshift=-1cm] {$К_{зл}$};
+		\node (kolodki3) [rectangle, above left of=K3, xshift=-0.5cm, draw=black] 
+			{колодки};
+		\node (cylinder3) [rectangle, below left of = kolodki3, draw=black,
+			xshift=-1.4cm] {цилиндр};
+		\node (sensor3) [rectangle, above right of=K3, xshift=0.5cm, draw=black]
+			{датчик};
+
+		\node (K4) [circle, draw=black, below of=K3, yshift=-1cm] {$К_{пл}$};
+		\node (kolodki4) [rectangle, above left of=K4, xshift=-0.5cm, draw=black] 
+			{колодки};
+		\node (cylinder4) [rectangle, below of = kolodki4, draw=black, yshift=-0.7cm]
+			{цилиндр};
+		\node (sensor4) [rectangle, above right of=K4, xshift=0.5cm, draw=black]
+			{датчик};
+		\node (bucgm) [rectangle, right of=K2, xshift=3cm, minimum width=1cm, minimum
+			height=7cm, draw=black, yshift=-0.4cm] {БУ с ГМ};
+	
+		\draw[->] (sensor1) -- ++(1.76cm, 0);
+		\draw[->] (sensor2) -- ++(1.76cm, 0);
+		\draw[->] (sensor3) -- ++(1.76cm, 0);
+		\draw[->] (sensor4) -- ++(1.76cm, 0);
+		\draw[->] (bucgm.72) -- ++(1cm, 0) |- (cylinder1);
+		\draw[->] (bucgm.289) -- ++(1cm, 0) |- (cylinder4);
+		\draw[->] (bucgm.40) -- ++(1.5cm, 0) -- ++(0, 4cm) -| (cylinder2);
+		\draw[->] (bucgm.320) -- ++(1.5cm, 0) -- ++(0, -4.5cm) -| (cylinder3);
+
+		\draw[->] (cylinder1) -- (kolodki1);
+		\draw[->] (cylinder2) |- (kolodki2);
+		\draw[->] (cylinder3) |- (kolodki3);
+		\draw[->] (cylinder4) -- (kolodki4);
+	\end{tikzpicture}
+	\caption{"Структурная схема АБС"}
+\end{figure}
+Рачсетная схема закладываемая в процессор разрабатвывается с учетом специфики
+расчета математической модели. Как алгоритмическая модель так и структура
+хранения и обмена данными подбирается исходя из того, какие именно выходные
+данные необходимо получить на основе входных и какие методы нужно применить или
+нужно разработать для этого. Функциональная оснощенность постпроцессора (среда
+построения основных характеристик и визуализации) зависит от особенности
+представления выходных характеристик, в том числе их пространственно-временного 
+распределения. Если пространственное распределение расчетной велечины 
+принципиально трехмерно, то есть относится к класу 3D, и не сводится к классу 2D или 
+2D$\sfrac{1}{2}$, то необходима визуализация на 3D уровне. Если при этом на 3D
+визуализацию в рамках постпроцессора накладывается аналитическая неразделимость
+пространственной и временной зависимостей расчетной характеристики нередко
+применяется цветовое кодирование, позволяющее цветом передать изменение велечины
+во времени и пространстве. 
+\begin{gather*}	
+	(x-1)^2\sin(\omega t) \\
+	(x\sin(\omega t) + x\cos(\omega t))x^2
+\end{gather*}\par
+Математическая модель является своего рода каркасом, тогда как такие компоненты
+САПр препроцессор, процессор и постпроцессор является оболочками этого каркаса,
+обеспечивающими программную реализацию адекватной алгоритмической модели и
+диалог с пользователем в своего рода буфере, предназначенном для ввода данных
+модели и представления расчетных характеристик модели в
+количественно-качественном виде.
+
+
 
