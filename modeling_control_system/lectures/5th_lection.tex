@@ -1,0 +1,148 @@
+%! TEX root = ../main.tex
+\section{Лекция }
+\subsection{Изоморфизм математического описания различных физических процессов}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline
+		$m\frac{dv}{dt}=P$ & $v$ & $P$ & $m$ & Гибкость $k$ & механическое
+		сопротивление $f$\\
+		\hline
+		$J\frac{d\omega}{dt} = M$ & $\omega$ & $M$ & $J$ & $k$ & вращ. сопротивление
+		$f$\\
+		\hline
+		\makecell{$i = C\frac{dU}{dt}$\\ $U = L\frac{di}{dt}$\\ U = Ri} & $U$ & $i$ 
+			& $C$ & $L$ & $R$\\
+		\hline
+		$S\frac{dh}{dt}=Q$ & $h$ & $Q$ & $S$ & $Q_i$ & $Q_r$\\
+		\hline
+		$G\frac{dU}{dt} = W$  & U & W & G &\, &\, \\ 
+		\hline
+		$V\frac{d\eta}{dt} = G$ & h & G & V & \, & \,\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsection{Проектирование математической модели для уточнения параметров орбиты
+спутника}
+У космического аппарата есть следующие параметры ({\ttfamily Погуглить и знать}):
+\begin{enumerate}
+	\item Наклонение плоскости орбиты к плоскости экватора.
+	\item Долгота восходящего угла орбиты.
+	\item Аргумент перегея --- угловое расстояние перцентра орбиты от ее восходящего
+		угла.
+	\item Фокальный параметр арбиты.
+	\item Экцентриситет орбиты.
+	\item Время пролета перецентра.
+\end{enumerate}\par
+Какие параметры можно измерить:
+\begin{enumerate}
+	\item Дальность от станции наблюдения до спутника.
+	\item Азимут от станции наблюдения до спутника.
+	\item Угол места в точке стояния от станции наблюдения.
+	\item Высота спутника над уровнем океана.
+	\item Скорость.
+	\item Время в момент изменения орбиты.
+\end{enumerate}
+Обобщенные параметры мы обозначаем через игреки ($y$). Нас будет интересовать
+следующая функциональная зависимость:
+\[y_i = F_i(x_1, x_2, \dots, x_6, t)\]
+Введем разности. $\delta y_i$ --- разница между измеренным значением и
+расчетным значением $\delta y_i = y_i^{изм} - y_i^{Р}$. $\delta x_j =
+x_j^{(искомое)} - x_j^{(расчетное)}$.
+
+{\Large \ttfamily TODO вставить фото схемы}\par
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[node distance = 2cm]
+		\node (in1) [input]{};
+		\node (in2) [input, below of=in1, yshift=1cm]{};
+		\node (in3) [input, below of=in2, yshift=1cm]{};
+		\node (in4) [input, below of=in3, yshift=1cm]{};
+		\node (bl) [block, minimum height = 5cm, right of = in2] {?};
+		\node (out1) [output, right of=in1, xshift=2cm] {};
+		\node (out2) [output, right of=in2, xshift=2cm] {};
+		\node (out3) [output, right of=in3, xshift=2cm] {};
+		\node (out4) [output, right of=in4, xshift=2cm] {};
+		\draw [arrow] (in1) -- node [yshift=8pt] {$\delta y_1$} (bl.141);
+		\draw [arrow] (in2) -- node [yshift=8pt] {$\delta y_2$} (bl);
+		\draw [arrow] (in3) -- node [yshift=8pt] {$\dots$} (bl.219);
+		\draw [arrow] (in4) -- node [yshift=8pt] {$\delta y_6$} (bl.238);
+		\draw [arrow] (bl.39) -- node [yshift=8pt] {$\delta x_1$}(out1);
+		\draw [arrow] (bl) -- node [yshift=8pt] {$\delta x_2$}(out2);
+		\draw [arrow] (bl.-39) -- node [yshift=8pt] {$\dots$}(out3);
+		\draw [arrow] (bl.-58) -- node [yshift=8pt] {$\delta x_6$}(out4);
+	\end{tikzpicture}
+\end{figure}
+
+\[\delta y_i = \frac{\partial F_i}{\partial x_1}\delta x_1 + \frac{\partial
+F_i}{\partial x_2}\delta x_2 + \dots + \frac{\partial F_i}{\partial x_6}\delta
+x_6 \]
+
+В результате получает уравнение:
+\[ \delta Y = A \delta X\]
+Где $A$ --- опорная матрица из разных частных производных. С учетом ошибок
+измерения и прогнозирования $\xi_i$ данное уравнение представляет в уточненном 
+виде:
+\[\xi _i = \delta Y - A\delta X\]
+Наша задача состоит в том, чтобы используя это соотношение, надо найти наиболее
+правдоподобные поправки расчетных параметров орбиты.
+Согласно методу наименьших квадратов, наиболее правдоподобными являются те
+значения $\delta y_j$, которые обращают в минимум сумму квадратов ошибок
+измеряемых значений $y_i$.\par
+\[S = \sum_{i=1}^N \xi_i^2 = \sum_{i=1}^{N} (\sum_{j=1}^6 A_{ij} \delta x_j -
+\delta y_i)^2\]
+\[S = \bar\xi^T \xi\]
+\[ S = (\delta Y - A \delta X)^T(\delta Y - A\delta X) \]
+\[ S = \delta Y^T \delta Y - 2 \delta X^T A^T \delta Y + \delta X^T A^T A \delta
+X\]
+\[\frac{\partial S}{\partial X} = -2 A^T \delta Y + 2 A^2 A \delta X = 0\]
+\[(A^TA) \delta X = A^T \delta Y\]
+
+\subsection{Переход от дифференциальных уравнений к переменным состояния}
+В общем виде уравнение связывающее вход и выход одномерного объекта выглядит
+следующим образом:
+\[ \Psi(y, \dot y, \ddot y, \dots, y^{(n)}, u, \dot u, \ddot u, \dots, u^{(m)},
+t) = 0 \]\par
+Если сводим к линейным ДУ, то:
+\[ a_n y^{(n)} + a_{n-1} y^{(n-1)} + \dots + a_1 \dot y + a_0 y = b_m u^{(m)} +
+\dots + b_1 \dot u + b_0 u\]\par
+Если выходной сигнал однозначно определяется начальными условиями и заданным
+входным сигналом, то можем выразить старшую производную.
+\begin{equation}
+	y^{(n)} = F(y, \dot y, \ddot y, \dots, y^{(n-1)}, u, \dot u, \dots, u^{(m)})
+	\label{eq}
+\end{equation}
+
+\paragraph{2 случая}\mbox{}\par
+\begin{enumerate}
+	\item Производная от входного сигнала не входит в правую часть уравнений
+		\ref{eq}.\\ Выводятся:
+		\[ \begin{aligned}
+			&x_1 = y \\ &x_2 = \dot y \\ &x_3 = \ddot y \\ &\dots \\ &x_{n-1} = 
+			y^{(n-1)} \\ &x_n = y^{(n)}
+		\end{aligned} \Longrightarrow
+			\left\{ \begin{aligned}
+					&\dot x_1 \\ &\dot x_2 \\ &\dots \\ &\dot x_{n-1} = x_n \\ & \dot x_n
+					= F(x_1, x_2, \dots, x_{n-1}, u, t) \\ & y = x_1
+		\end{aligned}\right. 
+	\] 
+	\null
+	\[\ddot y + \dot y + y = u\]
+	\[\left\{\begin{aligned}
+		&\dot x_1 = x_2\\ &\dot x_2 = -x_2 - x_1 + u \\ &y = x_1
+	\end {aligned}\right.\]
+
+\item Производная от входного сигнала присутствует в правой части уравнения.
+	Если входодной сигнал заранее известен и задан, то описанная выше процедура
+	остается в силе:
+	\[\left\{\begin{aligned}
+			& \ddot y + \dot y + y = u \\ & \dot x_1 = x_2 \\ & \dot x_2 = -x_2 -x_1 +
+			a \cos (t) \\ & y = x_1
+		\end{aligned}\right.\]
+\end{enumerate}\par
+Если входной сигнал не известен заранее, то в качестве переменной состояния
+можно выбрать производную старшего порядка от входного сигнала и ввести ее в
+вектор переменных состояния.
+
