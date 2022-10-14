@@ -137,11 +137,55 @@ $A_3 = 2$.
 состояний только с вещественными элементами.
 
 \[\left\{\begin{aligned}&Z = MAM^{-1} \cdot Z + MBu\\
-												& Y = CM^{-1}Z\end{aligned} \qquad
+												& Y = CM^{-1}Z\end{aligned}\right. \qquad
 		M = \begin{pmatrix} 1 & -1 \\ j & 1 \end{pmatrix}
 \]
 
-\[\left\{\begin{aligned}& Z = \begin{pmatrix} a & b \\ -b & a
-\end{pmatrix}Z + \begin{pmatrix}2 \\ 0\end{pmatrix}u \\
-												& Y = CM^{-1}\cdotZ
-\end{aligned}\]
+\[\left\{\begin{aligned} & Z = \begin{pmatrix} a & b \\ -b & a \end{pmatrix} Z + \begin{pmatrix} 2 \\ 0 \end{pmatrix} u \\
+												 & Y = CM^{-1}\cdot Z
+\end{aligned}\right.\]
+
+\subsection{Переход от уравнений состояний к передаточной функции}
+\[
+  \left\{\begin{aligned} & \dot X = AX + BU \\
+  & Y = CX + DU\end{aligned}\right. 
+\] 
+
+\[
+  \left\{\begin{aligned} & pX = AX + BU
+  & Y = CX + DU \end{aligned}\right.  \rightarrow \left\{\begin{aligned} & X =
+  (pE \cdot A)^{-1}BU \\ & Y = (C(pE \cdot A)^{-1}B +D)\cdot U \end{aligned}\right. 
+\] 
+\[
+W(p) = C(pE \cdot A)^{-1}B + D
+\] 
+Пример:
+\[
+\begin{aligned}
+   \dot X &=  \begin{bmatrix} -1 & -2 \\ 0 & -2 \end{bmatrix} X + \begin{pmatrix}
+1 \\ 1\end{pmatrix} U \\
+   Y &= \begin{pmatrix} -1 & 1 \end{pmatrix} X
+\end{aligned}
+\quad \Rightarrow \quad
+\begin{aligned}
+ pX &= \begin{bmatrix} -1 & -2 \\ 0 & -2 \end{bmatrix} \bar X + \begin{pmatrix}
+ 1 \\ 1 \end{pmatrix} U \\
+ Y &= \begin{pmatrix} -1 & 1 \end{pmatrix} \bar X
+\end{aligned}
+\]
+\bigskip
+\[
+  pE\cdot A = \begin{pmatrix} p+1 & 2 \\ 0 & p+2 \end{pmatrix} \qquad (pE\cdot
+  A)^{-1} = \frac{1}{(p+1)(p+2)}\begin{pmatrix} p+2 & -2 \\ 0 & p+1 \end{pmatrix}
+\] 
+\bigskip
+\[
+  X = (pE \cdot A)^{-1}BU = \frac{1}{(p+1)(p+2)}\begin{pmatrix} p+2 & -2 \\ 0 &
+  p+1 \end{pmatrix} \begin{pmatrix} 1 \\ 1 \end{pmatrix} U =
+  \frac{1}{(p+1)(p+2)} \begin{pmatrix} p \\ p+1 \end{pmatrix} U
+\] 
+\bigskip
+\[
+Y = \frac{U}{(p+1)(p+2)} \qquad W(p) = \frac{1}{(p+1)(p+2)}
+\] 
+
