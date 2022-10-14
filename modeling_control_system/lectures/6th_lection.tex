@@ -1,0 +1,147 @@
+%! TEX root = ../main.tex
+\section{Лекция от 8.10.22}
+\subsection{Переход от передаточной функции к переменным состояния}
+Передаточная функция в общем виде.\par
+\[W(p) = \frac{b_mp^m + b_{m-1}p^{m-1} + \ldots + b_1p + b_0}
+{a_np^n + a_{n-1}p^{n-1} + \ldots + a_1p +a_0} = \frac{(2)}{1}\]
+\begin{enumerate}
+	\item Метод фазовых переменных или метод прямого программирования.
+		\[\frac{U(p)}{(1)} = \frac{Y(p)}{(2)} = X(p)\]
+		\[\left\{\begin{aligned} 
+				&(1)\cdot X(p) = U(p)\\
+				&(2) \cdot X(p) = Y(p)
+				    \end{aligned}\right| p^nX(p) = \frac{1}{a_n}(U(p) - a_{n-1}p^{n-1}X(p) - \ldots - a_1pX(p) - a_0X(p))\]
+		\[x^{(n)} = \frac{1}{a_n}(u - a_{n-1}x^{(n-1)} - \ldots - a_1 \dot x - a_0x)\]
+		\[x_1 = x, x_2 = \dot x, x \text{не успел}\]
+		\[\begin{aligned} 
+			&\dot x_1 = x_2\\
+			&\dot x_2 = x_3\\
+			&\vdots\\
+			&\dot x_{n-1} = x_n\\
+			&\dot x_n = \frac{1}{a_n}(u - a_{n-1}x_n - \ldots - a_1x_2 - a_0x_1)\\
+			\hline\\
+			&y =  b_mx^{(m)} + b_{m-1}x^(m-1) + \ldots + b_1\dot x + b_0x
+		\end{aligned}\]
+
+		\[\begin{bmatrix} \dot x_1 \\ \dot x_2 \\ \dot x_3 \\ \vdots \\ \dot x_{n-1}
+		\\ \dot x_n \end{bmatrix} = 
+		\begin{bmatrix} 0 & 1 & 0 & \hdots & 0 & 0 \\
+										0 & 0 & 1 & \hdots & 0 & 0 \\
+										0 & 0 & 0 & \hdots & 0 & 0 \\
+										\vdots & \vdots & \vdots & \hdots & \vdots & \vdots \\
+										0 & 0 & 0 & \hdots & 0 & 1\\
+										-\frac{a_0}{a_n} & -\frac{a_1}{a_n} & -\frac{-a_2}{a_n} &
+										\hdots & -\frac{a_{n-1}}{a_n} & -\frac{a_{n-1}}{a_n} 
+										\end{bmatrix}	\begin{bmatrix} 
+		x_1 \\ x_2 \\ x_3 \\ \vdots \\ x_{n-1} \\ x_n
+										\end{bmatrix} + \begin{bmatrix}
+									0 \\ 0 \\ 0 \\ \vdots \\ 0 \\ \frac{1}{a_n} 
+									\end{bmatrix} \cdot u
+		\]
+
+		\[\dot{\bar X} = A \bar X + B \bar U\]
+
+	\item Метод полюсов или параллельного программирования.
+		При отсутствии кратных полюсов передаточная функция раскладывается на дроби
+		типа $\frac{A_i}{p - \lambda_i}$. $A_i$ --- вычеты; $\lambda_i$ --- полюса.
+		\[A_i = (p - \lambda_i)W(p) |_{p=\lambda_i}\]
+		\[X_i(p) = \frac{U(p)}{p-\lambda_i}, \]
+		\[\dot X = \begin{bmatrix} \lambda_1 & 0 & 0 & \hdots & 0 \\
+			0 & \lambda_2 & 0 & \hdots & 0 \\
+			0 & 0 & \lambda_3 & \hdots & 0 \\
+			\vdots & \vdots & \vdots & \hdots & \vdots\\
+			0 & 0 & 0 & \hdots & \lambda_n
+			\end{bmatrix} \cdot X + \begin{pmatrix}
+			1 \\ 1\\ 1\\ \vdots 1
+		\end{pmatrix} \cdot u\]
+		\[X = \begin{pmatrix}x_1 \\ x_2 \\ x_3 \\ \vdots \\ x_n \end{pmatrix}\qquad Y = CX
+			= \begin{pmatrix}A_1 & A_2 & \hdots & A_n\end{pmatrix} \cdot X\]
+	\end{enumerate}\par
+
+Рассмотрим пример:
+\[\ddot y + 3 \dot y + 2y = u + 4 \dot u\]
+\[W(p) = \frac{Y(p)}{U(p)} = \frac{1 + 4p}{p^2 + 3p + 2} = \frac{7}{p+2} -
+\frac{3}{p+1}\]
+\[\left.\begin{aligned} &\dot x_1 = -2x_1 + u \\
+									&\dot x_2 = -x_2 + u \\
+									&y = 7x_1 - 3x_2\end{aligned}\right\} 
+\left\{\begin{aligned}
+	&\dot x = \begin{pmatrix} -2 & 0 \\ 0 & -1\end{pmatrix}x +
+	\begin{pmatrix}1 \\ 1\end{pmatrix}u\\
+	&y = (7 - 3)x
+\end{aligned}\right.\]
+\paragraph{Кратные подвещественные полюса}\mbox{}\par
+\[W(p) = \frac{A_1}{(p-\lambda_i)^k} + \frac{A_2}{(p-\lambda_i)^{k-1}} + \ldots
++ \frac{A_k}{p - \lambda_i} + \frac{A_{k+1}}{p - \lambda_{k+1}} + \ldots +
+\frac{A_n}{p-\lambda_n}\]
+Где $\lambda_i$ --- кратности $k$
+
+\[\left\{\begin{aligned} &x_k(p) = \frac{U(p)}{p-\lambda_i}\\
+												 &x_{k-1}(p) = \frac{x_k(p)}{p-\lambda_i}\\
+												 &\hdots\\
+												 &x_1(p) = \frac{x_2(p)}{p-\lambda_i}
+	\end{aligned}\right. \Longrightarrow \left\{\begin{aligned}
+												 &\dot x_k = \lambda_i x_k + u \\
+												 &\dot x_{k-1} = \lambda_i x_{k-1} + x_k\\
+												 &\hdots\\
+												 &\dot x_1 = \lambda_1 x_1 + x_2
+\end{aligned} \right.\]
+
+		\[\dot X = \begin{bmatrix} \lambda_i & 1 & 0 \hdots \\
+			0 & \lambda_i & 1 & \hdots \\
+			\vdots & 0 & \lambda_i & 1 & \hdots\\
+			\vdots & \vdots & \ddots & \ddots & \ddots &\hdots\\
+			\vdots & \vdots & \vdots & 0 & \lambda_i & 1 & \hdots\\
+			\vdots & \vdots & \vdots & \vdots & 0 & \lambda_i & 0 & \hdots\\
+			\vdots & \vdots & \vdots & \vdots & \vdots & 0 & \lambda_{k+1} & 0
+						 &\hdots\\
+			\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots
+						 &\hdots\\
+			\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots &
+			\lambda_n
+			\end{bmatrix} \cdot x + \begin{pmatrix} 0 \\ 0 \\ 0 \\ \vdots\\ 0\\ 1\\
+			1\\ \vdots \\ 1
+		\end{pmatrix} \cdot u\]
+
+Пример 2:
+\[W(p) = \frac{p}{(p+1)^2(p+2)} = - \frac{1}{(p+1)^2} + \frac{2}{p+1} -
+\frac{2}{p+2}\]
+\null
+\[A_1 = \left.\frac{(p+1)^2p}{(p+1)^2(p+2)}\right|_{p=-1} = \frac{-1}{-1+2} = -1\]
+\null
+\[A_2 = \left.\frac{(p+2)p}{(p+1)^2(p+2)}\right|_{p=-2} = \frac{-2}{(-2+1)^2}
+= -2\]
+\parТак как сумма двух вычетов ($A_2$ и $A_3$) в двухкратном полюсе равна 0, то
+$A_3 = 2$.
+\[\left\{\begin{aligned} 
+&\dot X = \begin{pmatrix} -1 & 1 & 0\\
+	0 & -1 & 0\\
+	0 & 0 & -2
+	\end{pmatrix} \cdot X + \begin{pmatrix} 0 \\ 1 \\ 1 \end{pmatrix} \cdot u\\
+		&Y = \begin{pmatrix}-1 & 2 & -2\end{pmatrix} x
+\end{aligned}\right.\]
+%\hrule{0.5pt}{\textwidth}
+-----------------------------------------
+\null
+\parПри комплексно-сопряженных полюсах есть возможность сформировать матрицы
+состояния только с вещественными элементами.
+\[\left\{\begin{aligned} &\dot x = Ax +Bu\\
+		& y = Сx
+	\end{aligned}\right.\]
+		\[A = \begin{pmatrix} a + jb & 0 \\ 0 & a - jb \end{pmatrix},
+		B = \begin{pmatrix} 1 \\ 1 \end{pmatrix}\]
+Введем переменные:
+\[Z = MX,\quad X = M^{-1}Z\]
+
+При наличии комплексно сопряженных полюсов есть возможность составить матрицы
+состояний только с вещественными элементами.
+
+\[\left\{\begin{aligned}&Z = MAM^{-1} \cdot Z + MBu\\
+												& Y = CM^{-1}Z\end{aligned} \qquad
+		M = \begin{pmatrix} 1 & -1 \\ j & 1 \end{pmatrix}
+\]
+
+\[\left\{\begin{aligned}& Z = \begin{pmatrix} a & b \\ -b & a
+\end{pmatrix}Z + \begin{pmatrix}2 \\ 0\end{pmatrix}u \\
+												& Y = CM^{-1}\cdotZ
+\end{aligned}\]
