@@ -1,0 +1,257 @@
+%! TEX root = ../main.tex
+\section{Лекция от 8.10.2022}
+\subsection{Переход от передаточной функции к переменным состояния}
+Передатоная функция в общем виде.\par
+\[
+  W(p) = \frac{b_mp^{m} + b_{m-1}p^{m-1} + \cdots + b_1p + b_0}{a_np^{n} +
+  a_{n-1}p^{n-1} + \cdots + a_1p + a_0} = \frac{(2)}{(1)}
+\]
+\subsubsection{Метод фазовых переменных (метод прямого программироавния)}
+\[
+  \frac{U(p)}{(1)} = \frac{Y(p)}{(2)} = X(p)
+\] 
+\[
+  \left.\left\{\begin{aligned} 
+    (1) \cdot  X(p) &= U(p)\\
+    (2) \cdot  X(p) &= Y(p)\\
+  \end{aligned}\right. \right| 
+  p^n X(p) = \frac{1}{a_n}[U(p)-a_{n-1}p^{n-1}X(p) - \cdots - a_1pX(p)-a_0X(p)
+\] 
+{\ttfamily Если начальное условие $\neq 0$, обратное преобразование Лапласа,
+абсцисса сходимости}
+\[
+  X^{(n)} = \frac{1}{a_n}[u - a_{n-1}x^{(n-1)} - \cdots - a_1 \dot x - a_0 x]
+\] 
+Введем переменные состояния: $x_1 = x,\ x_2 = \dot x,\ x_3 = \ddot x,\ \ldots,\ 
+x_{n-1} = x^{(n-2)},\ x_n = x^{(n-1)}$
+Перепишем в полуматричном виде:
+\[
+  \left\{\begin{aligned}
+    &\dot x_1 = x_2 \\ &\dot x_2 = x_3 \\ &\dot x_3 = x_4 \\ \vdots \\ 
+    &\dot x_{n-1} = x_n \\ &\dot x_n = \frac{1}{a_n}[u - a_{n-1}x_n -
+    \cdots - a_1 x_2 - a_0 x_1] \\
+    &y = b_mx^{(m)} + b_{m-1}x^{(m-1)} + \cdots + b_1 \dot x + b_0 x
+  \end{aligned}\right. 
+\] 
+
+\[
+  \begin{bmatrix}
+    \dot x_1 \\ \dot x_2 \\\dot x_3 \\ \vdots \\
+    \dot x_{n-1} \\ \dot x_n 
+  \end{bmatrix} = 
+  \begin{bmatrix} 0 & 1 & 0 & \hdots & 0 & 0 \\
+										0 & 0 & 1 & \hdots & 0 & 0 \\
+										0 & 0 & 0 & \hdots & 0 & 0 \\
+										\vdots & \vdots & \vdots & \hdots & \vdots & \vdots \\
+										0 & 0 & 0 & \hdots & 0 & 1\\
+										-\frac{a_0}{a_n} & -\frac{a_1}{a_n} & -\frac{-a_2}{a_n} &
+										\hdots & -\frac{a_{n-1}}{a_n} & -\frac{a_{n-1}}{a_n} 
+										\end{bmatrix}	\begin{bmatrix} 
+		x_1 \\ x_2 \\ x_3 \\ \vdots \\ x_{n-1} \\ x_n
+										\end{bmatrix} + \begin{bmatrix}
+									0 \\ 0 \\ 0 \\ \vdots \\ 0 \\ \frac{1}{a_n} 
+									\end{bmatrix} \cdot u
+\] 
+  
+\[
+  \dot{\bar X} = A \bar X + B \bar U
+\] 
+
+\subsubsection{Метод полюсов (параллельного программирования)}
+При отсутствии кратных полюсов передаточная функция раскладывается на дроби
+типа $\frac{A_i}{p - \lambda_i}$. $A_i$ --- вычеты; $\lambda_i$ --- полюса.
+\[
+  A_i = \left.(p - \lambda_i) W(p)\right|_{p=\lambda_i}
+\] 
+\[
+  X_i(p) = \frac{U(p)}{p-\lambda_i} \qquad \text{Во временной области: } \dot x_i
+  = \lambda_i x_i + u
+\] 
+
+\[
+  \dot X = \begin{bmatrix} 
+    \lambda_1 & 0 & 0 & \cdots & 0 \\
+    0 & \lambda_2 & 0 & \cdots & 0 \\
+    0 & 0 & \lambda_3 & \cdots & 0\\
+    \vdots & \vdots & \vdots & \cdots & \vdots\\
+    0 & 0 & 0 & \cdots & \lambda_n
+  \end{bmatrix} \cdot X + \begin{bmatrix} 1 \\ 1\\ 1\\ \vdots \\ 1 \end{bmatrix}
+  \cdot U
+\] 
+\[
+  X = \begin{bmatrix} x_1 \\ x_2 \\ x_3 \\ \vdots \\ x_n \end{bmatrix} \qquad
+  \qquad Y  = CX = \begin{pmatrix} A_1 & A_2 & \ldots & A_n \end{pmatrix} \cdot X
+\] 
+\paragraph{Пример:}
+\[
+  \ddot y + 3 \dot y + 2 y = u + 4 \dot u
+\] 
+\[
+  W(p) = \frac{Y(p)}{U(p)} = \frac{1 + 4p}{p^2 + 3p + 2} = \frac{7}{p+2} -
+  \frac{3}{p+1}
+\] 
+\[
+  \left\{\begin{aligned} 
+      \dot x_1 &= -2x_1 + u \\ \dot x_2 &= -x_2 + u \\ y &= 7x_1 - 3 x_2
+  \end{aligned}\right. \quad \to \quad
+  \begin{aligned}
+    \dot x &= \begin{pmatrix} -2 & 0 \\ 0 & -1 \end{pmatrix} x +
+    \begin{pmatrix}1 \\ 1 \end{pmatrix} u\\
+    y &= \begin{pmatrix} 7 & -3 \end{pmatrix}x \\
+  \end{aligned}
+\] 
+\centerline{\hfill\hrulefill\hrulefill\hrulefill\hfill}
+\paragraph{Кратные полюса}
+\[
+  W(p) = \frac{A_i}{(p - \lambda_i)^{k}} + \frac{A_2}{(p-\lambda_i)^{k-1}} +
+  \cdots + \frac{A_k}{p-\lambda_i} + \cdots + \frac{A_n}{p - \lambda_n}
+\] 
+Где $\lambda_i$ --- корень кратности $k$
+\[
+  \begin{aligned}
+    &x_k(p) = \frac{U(p)}{p - \lambda_i}\\
+    &x_{k-1}(p) = \frac{x_k(p)}{p-\lambda_i}\\
+    &\vdots\\
+    & x_1(p) = \frac{x_2(p)}{p-\lambda_i}
+  \end{aligned} \quad \to \quad
+  \begin{aligned}
+    & \dot x_k = \lambda_i x_k + u \\
+    & \dot x_{k-1} = \lambda_i x_{k-1} + x_k\\
+    & \vdots\\
+    & \dot x_1 = \lambda_i x_1 + x_2
+  \end{aligned}
+\] 
+Везде учитываем нулевое начальное условие. Если начальное условие $\neq 0$
+формулы видоизменяются
+\[
+  \dot X = \begin{bmatrix} \lambda_i & 1 & 0 & \hdots \\
+			0 & \lambda_i & 1 & \hdots \\
+			\vdots & 0 & \lambda_i & 1 & \hdots\\
+			\vdots & \vdots & \ddots & \ddots & \ddots &\hdots\\
+			\vdots & \vdots & \vdots & 0 & \lambda_i & 1 & \hdots\\
+			\vdots & \vdots & \vdots & \vdots & 0 & \lambda_i & 0 & \hdots\\
+			\vdots & \vdots & \vdots & \vdots & \vdots & 0 & \lambda_{k+1} & 0
+						 &\hdots\\
+			\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots
+						 &\hdots\\
+			\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots &
+			\lambda_n
+			\end{bmatrix} \cdot x + \begin{pmatrix} 0 \\ 0 \\ 0 \\ \vdots\\ 0\\ 1\\
+			1\\ \vdots \\ 1
+		\end{pmatrix} \cdot u
+\]
+\paragraph{Пример:}
+\[
+  W(p) = \frac{p}{(p+1)^2 (p+2)} = \frac{-1}{(p+1)^2} + \frac{2}{p+1} +
+  \frac{-2}{p+2}
+\] 
+Числители --- вычеты
+\[
+  A_1 = \left.\frac{(p+1)^2p}{(p+1)^2(p+2)}\right|_{p=-1} = \frac{-1}{-1 + 2} =
+    -1
+\] 
+\[
+  A_2 = \left.\frac{(p+2)p}{(p+1)^2(p+2)}\right|_{p=-2} = \frac{-2}{(-2+1)^2} =
+    -2
+\] 
+Так как сумма двух вычетов ($A_2$ и $A_3$) двукратном полюсе $= 0$, то $A_3 =
+2$\par
+\centerline{\hfill\hrulefill\hrulefill\hrulefill\hrulefill\hrulefill\hfill}
+Формула вычетов:
+\[
+\begin{aligned}
+    &A_i = \frac{1}{(i-1)!} \frac{d^{i-1}}{dp^{i-1}}\left.
+      [(p-\lambda_i)^{k}W(p)]\right|_{p=\lambda_i}, \text{ где  } i = \overline{1 \ldots k}\\
+  &A_j = (p-\lambda_j)\left.W(p)\right|_{p=\lambda_i}, \text{ где } j =
+    \overline{k+1 \ldots n}
+\end{aligned}
+\] 
+\centerline{\hfill\hrulefill\hrulefill\hrulefill\hrulefill\hrulefill\hfill}
+
+\[
+  \left\{\begin{aligned} 
+      \dot X &= \begin{pmatrix} 
+        -1 & 1 & 0\\ 0 & -1 & 0 \\ 0 & 0 & -2
+      \end{pmatrix}X + \begin{pmatrix} 0 \\ 0 \\ 1 \end{pmatrix}U \\
+        Y &= \begin{pmatrix} -1 & 2 \end{pmatrix} X \\
+  \end{aligned}\right. 
+\] 
+\parПри комплексно-сопряженных полюсах есть возможность формировать модель состояний
+только с вещественными элементами.
+\[
+  \left\{\begin{aligned} 
+      \dot x &= Ax + Bu\\
+      y &= Cx \\
+    \end{aligned}\right. \qquad A = \begin{bmatrix} 
+      a+jb & 0 \\ 0 & a-jb 
+    \end{bmatrix} \ B = \begin{bmatrix} 1 \\ 1 \end{bmatrix} 
+\] 
+Замена переменных: $Z = MX, \ X = M^{-1}Z$
+\[
+  \left\{\begin{aligned} 
+    Z &= M A M^{-1} Z + MBU\\
+    Y &= CM^{-1}Z \\
+  \end{aligned}\right. \qquad M = \begin{pmatrix} 1 & 1\\ j & -j \end{pmatrix} 
+\] 
+\[
+  \left\{\begin{aligned} 
+      Z &= \begin{pmatrix} a & b \\ -b & a \end{pmatrix}  \cdot Z + 
+      \begin{pmatrix} 2 \\ 0 \end{pmatrix}  \cdot u\\
+      Y &= CM^{-1}Z \\
+  \end{aligned}\right. 
+\] 
+
+\subsection{Переход от уравнения состояний к передаточной функции}
+\[
+  \left\{\begin{aligned} 
+    \dot X &= AX + BU \\
+    Y &= CX + DU \\
+  \end{aligned}\right. \qquad \text{Нулевые начальные условия}
+\] 
+\[
+  \left\{\begin{aligned} 
+    pX &= AX + BU \\
+    Y &= CX + DU \\
+  \end{aligned}\right. \quad \to \quad
+  \begin{aligned}
+    X &= (pE - A)^{-1} BU \\ Y &= [C(pE-A)^{-1}B + D]U
+  \end{aligned}
+\] 
+
+\paragraph{Пример:}
+\[
+ \left\{\begin{aligned} 
+     \dot x_1 &= \begin{bmatrix} -1 & -2 \\ 0 & -2 \end{bmatrix} \cdot X + 
+     \begin{bmatrix} 1 \\ 1 \end{bmatrix} \cdot u\\ 
+     y &= \begin{pmatrix} -1 & 1 \end{pmatrix} \cdot u \\
+ \end{aligned}\right. \quad \implies \quad 
+ \left\{\begin{aligned} 
+     p \bar X &= \begin{bmatrix} 1& -2 \\ 0 & -2 \end{bmatrix} X +
+     \begin{pmatrix} 1 \\ 1 \end{pmatrix} U \\
+     Y &= \begin{pmatrix} -1 & 1 \end{pmatrix} \bar X \\
+ \end{aligned}\right. 
+\] 
+
+\[
+  (pE - A) = \begin{pmatrix} p & 0 \\ 0 & p \end{pmatrix} -
+  \begin{pmatrix} -1 & -2 \\ 0 & -2 \end{pmatrix} =
+  \begin{pmatrix} p+1 & 2 \\ 0 & p+2 \end{pmatrix} 
+\] 
+
+\[
+  (pE - A)^{-1} = \frac{1}{(p+1)(p+2)} \cdot \begin{pmatrix} 
+    p+2 & 2 \\ 0 & p+1
+  \end{pmatrix} \quad \text{?}
+\] 
+\[
+  x = (pE - A)^{-1} \cdot BU = \frac{1}{(p+1)(p+2)} \cdot 
+  \begin{bmatrix} p+2 & -2 \\ 0 & p+1 \end{bmatrix} \cdot 
+  \begin{pmatrix} 1\\1 \end{pmatrix} \cdot U = \frac{1}{(p+1)(p+2)} \cdot
+  \begin{pmatrix} p \\ p+1 \end{pmatrix} 
+\] 
+\[
+  Y = \frac{U}{(p+1)(p+2)}
+\] 
+\[
+  W(p) = \frac{1}{(p+1)(p+2)}
+\] 
