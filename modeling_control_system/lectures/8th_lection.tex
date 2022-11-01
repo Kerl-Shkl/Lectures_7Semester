@@ -1,0 +1,165 @@
+%! TEX root = ../main.tex
+
+\section{Лекция от 22.10.2022}
+\subsection{Моделирование систем управления на командном языке \textit{Control
+System Toolbox (CST)}}
+Команды:
+\begin{enumerate}
+  \item \textit{zpk} --- создает звено с явно определенной передаточной функцией.
+    \[
+      W(s) = k \frac{(s-z_1)(s-z_2)\ldots(s-z_n)}{(s-p_1)(s-p_2)\ldots(s-p_n)}
+      \qquad \text{zpk форма}
+    \] 
+    \par Код:
+    \begin{verbatim}
+      obj = zpk(z, p, k)
+      zpk([1 2], [3, 4, 5], 6)
+    \end{verbatim}
+    Вывод:
+    \[
+      W(s) = 6 \frac{(s-1)(s-2)}{(s-3)(s-4)(s-5)}
+    \] 
+  \item \textit{tf} --- создает звено tf формы.
+    \[
+      W(s) = \frac{N_1 s^{m} + N_2 s^{m-1} + \cdots + N_m s + N_{m+1}}{D_1 s^{s}
+      + D_2 s^{n-1} + \cdots + D_ns + D_{n+1}}
+    \] \par
+    Код:
+    \begin{verbatim}
+      tf([1, 2], [3, 4, 5])
+    \end{verbatim}
+    Вывод:
+    \[
+      W = \frac{s+2}{3s^2 + 4s + 5} 
+    \] 
+  \item \textit{ss}
+    \[
+      \left\{\begin{aligned} 
+        \dot X &= AX + BU\\
+        Y &= CX + DU
+      \end{aligned}\right. 
+    \] 
+    Код:
+    \begin{verbatim}
+      obj = ss(A, B, C, D) 
+    \end{verbatim}
+
+  \item \textit{linmod}
+    \begin{verbatim}
+      [z, p, k] = linmod('name')
+      [n, d] = linmod('name')
+      [a, b, c, d] = linmod('name')
+    \end{verbatim}
+    Где \verb!'name'! --- путь до модели из симулинка.
+
+  \item \textit{parallel} (идентичная ей \textit{plus})
+    \begin{verbatim}
+      obj = parallel(obj1, obj2) 
+    \end{verbatim}
+    \begin{tikzpicture}[auto, node distance=2cm]
+     \node[input] (in) {};
+     \node[block, above right of = in, xshift=1cm] (o1) {Obj1};
+     \node[block, below right of = in, xshift=1cm] (o2) {Obj2};
+     \node[sum, right of = in, xshift=3.5cm] (sum) {};
+     \node[output, right of = sum, xshift = -1cm] (out) {};
+     \draw[arrow] (in) -- +(0.5, 0) |- (o1);
+     \draw[arrow] (in) -- +(0.5, 0) |- (o2);
+     \draw[arrow] (o1) -| (sum);
+     \draw[arrow] (o2) -| (sum);
+     \draw[arrow] (sum) -- (out);
+     %\draw[arrow] (in) -- (o2);
+    \end{tikzpicture}\par
+    %TODO вставить картинку
+    Расширенная форма: parallel
+
+  \item \textit{series} (идентичная mtimes(obj1, obj2))
+    \begin{verbatim}
+      obj = series(obj1, obj2) 
+    \end{verbatim}
+
+  \item \textit{feedback}
+    \begin{verbatim}
+     obj = feedback(obj1, obj2) //(obj1, obj2, -1) (obj1, obj2, +1)
+    \end{verbatim}
+    \begin{figure}[h!]
+      \centering
+      \begin{tikzpicture}[auto, node distance = 2cm]
+        \node[input] (in) {};
+        \node[sum, right of = input] (s) {};
+        \node[block, right of = s] (o1) {$obj_1$};
+        \node[output, right of = o1, xshift=1cm] (out) {};
+        \node[block, below of = o1] (o2) {$obj_2$};
+        \draw[arrow] (o1) -- node(p){y} (out);
+        \draw[arrow] (in) -- (s);
+        \draw[arrow] (s) -- (o1);
+        \draw[arrow] (p) |- (o2);
+        \draw[arrow] (o2) -| (s);
+      \end{tikzpicture}
+    \end{figure}
+
+      \item \textit{\dots data}
+    \begin{verbatim}
+      [z, p, k] = zpkdata(obj)
+      [num, den] = tfdata(obj)
+      [a, b, c, d] = ssdata(obj)  
+      Пример:
+      obj = zpk([1, 2], [3 4 5], 6)
+      Выдаст:
+      num = [1 x 4 double] | num{1} -> ans = 0 6 -18 -12
+      den = [1 x 4 double] | den{1} -> ans = 1 -12 47 -60
+    \end{verbatim}
+    В фигурных скобка указывается индекс интересующей передаточной функции в
+    матричной структуре представления параметров объекта. Эта позиция задается
+    либо одним числом для скалярных объектов (1 вход 1 выход) и векторных (1
+    вход много выходов), либо парой чисел для матричных объектов.\par
+
+    Для вывода определенного элемента строки коэфициентов числителя или
+    знаменатиеля, нулей или полюсов после указания в фигурных скобках индекса
+    соответствующей передаточной функции надо дополнительно в круглых скобках
+    задать позицию этого элемента в строке.
+\end{enumerate}
+
+\paragraph{Пример:}
+\begin{verbatim}
+  H = [tf([1 2], [3, 4, 5]), tf([1], [2 3])]
+  H.den{1}(3) = 7 //Изменим тертий элемент
+\end{verbatim}
+Вывод:\\
+\verb!Transfer function from input1 to output!
+\[ \frac{s+2}{3s^2 + 4s + 7} \] 
+\verb!Transfer function from input2 to output!
+\[ \frac{1}{2s + 3} \] 
+\texttt{InputName --- имена входов;\\ OutputName --- имена выходов в формате
+одномерного массива; \\ Variable --- форма отображения переменной преобразования
+Лапласа;\\ set(obj) --- позволяет получить информацию о формате представления
+свойств объекта;\\ get(obj) --- }\par
+\begin{verbatim}
+  obj = tf(1, [2, 3], 'inputname', 'вход', 'outputname', 'выход', 'variable', 'p')
+  set(obj, 'inputname', 'arseniy', 'outputname', 'отлично за колоквиум',
+  'variable', 's') | get
+\end{verbatim}
+
+\subsubsection{Анализ CST модели}
+\begin{itemize}
+  \item step(obj) --- реакция системы на единичный воздействующий сигнал.
+  \item impulse(  ) --- реакиция на импульс.
+  \item bode --- строит ЛАЧХ и ФЧХ.
+  \item nyquist --- годграф Найквиста.
+  \item margin --- 
+  \item pole --- выводит полюса.
+  \item zero --- выводит нули.
+  \item pzmap --- выводит полюса и нули.
+  \item \verb![y, t, x] = step(obj)!
+  \item \verb![mag, ph, freq] = bode(obj) #| nyquist(obj)!
+  \item \verb![ma, mp, fma, fmp] = margin(obj)! --- запасы устойчивости.
+  \item \verb![pole, zero] = pzmap(obj)!
+\end{itemize}\par
+Кроме того эти команды можно использовать для одновременного вывода в одном окне
+расчетных характеристик нескольких объектов, для чего эти объекты надо просто
+перечислить через запятую в круглых скобках.
+\paragraph{Пример:}
+\begin{verbatim}
+  obj1 = tf([1 2], [3 4 5]);
+  obj2 = tf([6 7], [8 9 10]);
+  pzmap(obj1, obj2)
+\end{verbatim}

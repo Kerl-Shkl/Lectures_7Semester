@@ -1,0 +1,204 @@
+%! TEX root = ../main.tex
+
+\section{Лекция от 29.10.2022}
+\subsection{S функция для непрерывного состояния}
+Блок \verb!S-function!.
+\[
+  \left\{\begin{aligned} 
+    &y = F_1(t, x, u)\\
+    &x = x_{н} + x_y\\
+    &\dot x_{н} = F_2 (t, x, u)\\
+    &x_y ^{k+1} = F_3(t, x, u) \\
+  \end{aligned}\right. 
+\] 
+Есть поле \verb!S-function name! и поле \verb!S-function parameters!\par
+
+Надо найти файл sfuntmpl.m и его поменять:
+\begin{verbatim}
+  function[sys, x0, str, ts] = sfuntmpl(t, x, u, flag) %В квадратных, что на выходе
+                                                       %В круглых, что на входе
+  %Чтобы доавить параметры заголовок надо поменять
+  function[sys, x0, str, ts] = s1(t, x, u, flag, p_1, p_2, p_n) 
+
+  switch-case ...
+
+  1. mdlInitializeSizes
+  /*
+  sizes.NumInputs - количество входов
+  sizes.NumContStates - Количество непрерывных переменных состояний
+  sizes.NumOutputs - количество выходов
+  sizes.DirFeedThrough - под прямым проходом для непрерывных систем
+                         подразумевается явное присутствие в уравнении 
+                         y = F_1(t, x, u) входного сигнала или его компонентов.
+                         Под отсутствием прямого прохода подразумевается или
+                         отсутствие зависимости y от u или зависимость y от u
+                         только через x. Если зависимости нет, ставим 0. Если
+                         зависимость есть, задаем 1. Используется при проверке
+                         наличия замкнутых алгебраических контуров.
+  Также указываем размерности переменных входа и состояния. Если передать -1, то
+  будет автоматическое определение этих величин по размерности поступающего
+  входного сигнала. Dynamically sized inputs - динамические входные величины.
+  */
+  
+  %метод оформлен в виде функции со следующим заголовком
+  function[sys, x0, str, ts] = mdlInitializeSizes %ничего на вход не принимает
+  /*
+  sys - структура класса SimStruct 
+  ts - определяет схемму квантования. На непрерывных моделях не нужен.
+  */
+  %код:
+  sizes = simsizes;
+  sizes.NumContStates = 0;
+  sizes.NumContStates = 0;
+  sizes.NumDiscStates = 0;
+  sizes.NumOutputs = 0;
+  sizes.Inputs = 0;
+  sizes.DirFeedThrough = 1;
+  sizes.NumSampleTimes = 1; %Количество строк в массиве ts
+
+  sys = simsizes(sizes);
+  x0 = [];
+  str = [];
+  ts = [0 0];
+
+  %--------------------------------
+  %Два метода для непрерывных моделей
+  function sys = mdlDerivatives(t, x, u) %Соответствует уравнению \dot X = AX + BU
+  
+  function sys = mdlOutputs(t, x, u) %Соответствует Y = CX + DU
+
+  switch flag,
+    case 0,
+      [sys,x0,str,ts,simStateCompliance]=mdlInitializeSizes;
+    case 1,
+      sys=mdlDerivatives(t,x,u);
+    case {2,4,9},
+      sys = [];
+    otherwise
+      error(['Unhandled flag = ', num2str(flag)]);
+    end
+\end{verbatim}
+\texttt{Знать, что такое динамическое моделирование}
+
+\paragraph{Пример}\mbox{}\par
+Создадим модель с умножением сигнала на заданный коэффициент
+%\begin{figure}
+% \centering
+% \begin{tikzpicture}[node distance = 2cm]
+%   \node[block] (const) {1 (const)};
+%   %\node[block, right of = const] (sf) {S\_function\_1}
+%   %\node[block, right of = sf] (d) {display};
+%   %\draw[arrow] (const) -- (sf);
+%   %\draw[arrow] (sf) -- (d);
+% \end{tikzpicture}
+%\end{figure}
+
+Код:
+\begin{verbatim}
+  %s_function_1.m 
+  function[sys, x0, str, ts] = s_function_1(t, x, u, flag, k)
+  switch flag,
+    case 3,
+      sys=mdlOutpust(t, x, u, k)
+    case {1, 2, 4, 9},
+      sys = [  ];
+    case 0,
+      sys = mdlInitializeSizes
+
+  %----------------------------
+  %mdlInitializeSizes
+  ...
+  sizes = simsizes;
+  sizes.NumContStates = 0;
+  sizes.NumDiscStates = 0;
+  sizes.NumOutputs = -1;
+  sizes.NumInputs = -1;
+  sizes.DirFeedThrough = 1;
+  sizes.SampleTimes = 1;
+
+  sys = simsizes(sizes);
+  x0 = [];
+  str = [];
+  ts = [0 0]
+
+  %-------------------------
+  %mdlOutputs
+  function sys = mdlOutputs(t, x, u, k)
+  sys = u * k;
+
+\end{verbatim}
+
+\paragraph{Пример}\mbox{}\par
+\[
+  \left\{\begin{aligned} 
+    \dot X &= AX + BU \\
+    Y &= CX + DU \\
+  \end{aligned}\right. 
+\] 
+$U, X, Y$ имеют конкретную размерность равную двум.\\
+$A, B, C, D$ Имеют размерность $2 \times 2$ \\
+на вход подключен блок const со значением [1 2].
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[node distance = 3.5cm]
+    \node[block] (const) {$[1\ 2]$ (const)};
+    \node[block, right of = const] (sf) {S\_function\_2};
+    \node[block, right of = sf] (d) {Display};
+    \draw[arrow] (const) -- (sf);
+    \draw[arrow] (sf) -- (d);
+  \end{tikzpicture}
+\end{figure}
+\[
+  A = \begin{bmatrix} 0.1 & 0.2 \\ -0.8 & 0.8 \end{bmatrix} \qquad
+  B =\begin{bmatrix} 0.1 & 0 \\ 0.5 & 0 \end{bmatrix} 
+\] 
+\[
+  C = \begin{bmatrix} 1 & 0 \\ 0 & 1  \end{bmatrix} \qquad
+  D = \begin{bmatrix} 0.1 & 0 \\ 0 & -0.2 \end{bmatrix} 
+\] 
+Код:
+\begin{verbatim}
+  %s_function_2.m
+  function[sys, x0, str, ts] = cont_common(t, x, u, flag, A, B, C, D)
+
+  switch flag,
+    case 0,
+      sys = mdlInitializeSizes;
+    case 1,
+    sys = mdlDerivatives(t, x, u, A, B)
+    case 3,
+      sys = mdlOutputs(t, x, u, C, D);
+    case {2, 4, 9},
+
+  %----------------------------
+  %mdlInitializeSizes
+  ...
+  sizes = simsizes;
+  sizes.NumContStates = 2;
+  sizes.NumDiscStates = 0;
+  sizes.NumOutputs = 2;
+  sizes.NumInputs = 2;
+  sizes.DirFeedThrough = 1;
+  sizes.SampleTimes = 1;
+
+  sys = simsizes(sizes);
+  x0 = [0 0];
+  str = [];
+  ts = [0 0]
+
+  %----------------------------
+  %mdlDerivatives
+  function sys = mdlDerivatives(t, x, u, A, B)
+  sys = A*x + B*u;
+
+  %----------------------------
+  %mdlOutputs
+  function sys = mdlOutputs(t, x, u, C, D)
+  sys = C*x + D*u;
+\end{verbatim}
+В блоке constant:\\
+Constant value: $[1\ 2]$\\
+--------------\\
+name: s\_function\_2
+parameters: $\begin{bmatrix}0.1 & 0.2; & -0.8 & 0.8 \end{bmatrix};
+\begin{bmatrix} 0.1 & 0; & 0.5 & 0 \end{bmatrix};$ 
