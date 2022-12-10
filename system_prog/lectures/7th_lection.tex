@@ -1,0 +1,187 @@
+%! TEX root = ../main.tex
+
+\section{Лекция от 10.12.2022}
+
+\subsection{Синхронизация задач с помощью функций ожидания}
+Освобождение объекта --- переход в сигнальное состояние.
+\begin{verbatim}
+  DWORD WaitForSingleObject(
+                HANDLE hHandle,
+                DWORD dwMilliseconds
+  );
+\end{verbatim}
+Второй параметр часто задают как \verb!INFINITE!.
+
+Функция может вернуть одно из четырех значений:
+\begin{itemize}
+  \item \verb!WAIT_TIMEOUT! --- Время ожидания вышло, объект не освободился.
+  \item \verb!WAIT_OBJECT_0! --- Объект перешел в сигнальное состояние.
+  \item \verb!WAIT_FAILED! --- Ошибка выполнения функции.
+  \item \verb!WAIT_ABANDONED! --- только для мьютексов. Означает, что мьютекс
+    освободился в следствии окончания выполнения владевшего им потока.
+\end{itemize}
+
+Функция:
+\begin{verbatim}
+  DWORD WaitForMultipleObjects(
+                DWORD   nCount,
+                HANDLE  *lpHandles,
+                BOOL    bWaitAll,
+                DWORD   dwMilliseconds
+  );
+\end{verbatim}
+Если \verb!bWaitAll! установить в \verb!FALSE!, функция завершает свою работу,
+когда хотя бы один из объектов переходит в сигнальное состояние. Если
+\verb!bWaitAll! равен \verb!TRUE!, то функция ожидает освобождения всех
+объектов.
+
+Функция возвращает следующие значения:\par
+Если \verb!bWaitAll == TRUE!:
+\begin{itemize}
+  \item \verb!WAIT_TIMEOUT! --- Время ожидания вышло, объект не освободился.
+  \item \verb!WAIT_OBJECT_0! --- Объект перешел в сигнальное состояние.
+  \item \verb!WAIT_FAILED! --- Ошибка выполнения функции.
+  \item \verb!WAIT_ABANDONED! --- только для мьютексов. Означает, что мьютекс
+    освободился в следствии окончания выполнения владевшего им потока.
+\end{itemize}\par
+Если \verb!bWaitAll == FALSE!:
+\begin{itemize}
+  \item \verb!WAIT_TIMEOUT!
+  \item \verb!WAIT_FAILED!
+  \item \verb![WAIT_OBJECT_0 ... WAIT_OBJECT_0 + nCount-1]!
+  \item \verb![WAIT_ABANDONED_0 ... WAIT_ABANDONED_0 + nCount-1]!
+\end{itemize}
+Чтобы получить индекс объекта надо из вернувшегося значения вычесть
+\verb!WAIT_OBWAIT_OBJECT_0!.
+
+В Рихтере посмотреть функцию \verb!SignalObjectandWait!.
+
+Одним из недостатков всех рассмотренных функций ожидания является то, что поток
+в котором вызывается любая из этих функций останавливается и не воспринимает
+поступающие сообщения. Сообщения поступают в очередь, но очередь не
+разгружается. Решение этой проблемы путем установки малого значения
+\verb!dwMilliseconds! и зацикливание вызова, если функция вернула
+\verb!WAIT_TIMEOUT! помогает слабо, так как сообщения все равно не успевают
+обработаться при циклической передачи управления.
+
+Для решения этой проблемы есть функция 
+\begin{verbatim}
+   DWORD MsgWaitForMultipleObjects(
+                DWORD   nCount,
+                HANDLE  *lpHandles,
+                BOOL    bWaitAll,
+                DWORD   dwMilliseconds,
+                DWORD   dwWakeMask
+  );
+\end{verbatim} 
+Эта функция завершает свою работу не только при наступлении сигнальных состояний
+объектов или по истечению времени ожидания, но и при поступлении сообщений,
+определенных маской \verb!dwWakeMask!. Примеры масок:
+\begin{itemize}
+  \item \verb!QS_ALLPOSTMESSAGE! --- функция будет реагировать на асинхронные
+    сообщения отличные от событий аппаратного ввода.
+  \item \verb!QS_SENDMESSAGE! --- функция будет реагировать на синхронные
+    сообщения, которые отправляются другим потоком.
+\end{itemize}
+
+\subsection{Синхронизация задач с помощью событий}
+Событие --- Самые примитивные объекты ядра, а по сути своей простыми
+уведомлениями об окончании каких-либо действий. Событие содержит в своем
+дескрипторе содержит счетчик числа пользователей и две логические переменные,
+которые указывают тип события (с ручным сбросом и с автоматическим сбросом) и
+состояние (свободен или занят).
+
+События с ручным сбросом можно перевести в несигнальное состояние функцией
+\verb!ResetEvent!. События с автосбросом переводятся в несигнальное состояние
+функцией \verb!ResetEvent! или функцией \verb!WaitForSingleObject!. Если событие
+с автоматическим сбросом ожидает несколько потоков с помощью функции
+\verb!WaitFoWaitForSingleObject!, то из состояния ожидания особождается только
+один из этих потоков.
+
+\begin{verbatim}
+  HANDLE CreateEvent(
+            LPSECURITY_ATTRIBUTES lpEventAttributes,
+            BOOL                  bManualReset,
+            BOOL                  bInitialState,
+            LPCSTR                Name
+  )
+\end{verbatim}
+Первый параметр объединяет в себе два параметра: наследование возвращенного
+дескриптора дочерними процессами и структура безопасности дескриптора.
+\verb!bManualReset! устанавливает тип сброса. Если \verb!TRUE!, то ручной,
+\verb!FALSE! --- автоматический. \verb!bInitialState! устанавливает начальное
+состояние события, \verb!TRUE! --- сигнальное, \verb!FALSE! --- несигнальное.
+Чтобы проверить, что такое событие уже есть, надо выполниться следующий код:
+\begin{verbatim}
+  if (GetLastError() == ERROR_ALREADY_EXISTS) {...}
+\end{verbatim}
+
+Устанавливают состояния таймера следующий функции
+\begin{verbatim}
+  BOOL ResetEvent(HANDLE hEvent);
+  BOOL SetEvent(HANDLE hEvent);
+\end{verbatim}
+
+Функция 
+\begin{verbatim}
+  BOOL PulseEvent(HANDLE hEvent)
+\end{verbatim}
+Если событие с ручным сбросом, эта функция позволяет всем потокам, которые
+ожидают этого события и могут немедленно завершить ожидание, выйти из состояния
+ожидания. Затем функция \verb!PulseEvent! переводи событие в несигнальное
+состояние и завершает свою работу.
+
+Для событий с автоматическим сбросом позволит только одному из ожидающих потоков
+выйти из состояния ожидания, если это возможно, после чего переводит событие в
+несигнальное состояние и завершает свою работу.
+
+Функция 
+\begin{verbatim}
+  HANDLE OpenEvent(
+          DWORD dwDesiredAccess,
+          BOOL bInheritHandle,
+          LPCSTR name
+  );
+\end{verbatim}
+\verb!dwDesiredAccess! может быть установлен в трех вариантах:
+\begin{itemize}
+  \item \verb!EVENT_ALL_ACCESS! --- поток сможет применять к событию любые
+    действия.
+  \item \verb!EVENT_MODIFY_STATE! --- в потоке можно использовать функции только
+    \verb!SetEvent! и \verb!ResetEvent!.
+  \item \verb!SYNCHRONIZE! --- в потоке можно только использовать функции
+    ожидания.
+\end{itemize}
+
+\paragraph{Пример}\mbox{}\par
+Поток 1 готовит данные, которые должны быть обработаны потоками 2 и 3.
+В потоке 1 размещаем следующий код:
+\begin{verbatim}
+  HANDLE E[2];
+  E[0] = CreateEvent(NULL, TRUE, FALSE, "MyEvent2");
+  E[1] = CreateEvent(NULL, TRUE, FALSE, "MyEvent3");
+  HANDLE H = CreateEvent(NULL, TRUE, FALSE, "MyEvent1");
+  // Подготовка данных
+  ...
+  // Окончание подготовки
+  SetEvent(H);
+  WaitForMultipleObjects(2, E, TRUE, INFINITE);
+  ResetEvent(E[0]);
+  ResetEvent(E[1]);
+  ResetEvent(H);
+\end{verbatim}
+
+С помощью события MyEvent1 поток 1 будет оповещать потоки 2 и 3 об окончании
+подготовки данных. События из массива \verb!E! будут использоваться для
+получения информации от потоков 2 и 3. После подготовки вызываем функцию
+\verb!SetEvent!.
+
+В потоке 2:
+\begin{verbatim}
+  HANDLE H = CreateEvent(NULL, TRUE, FALSE, "MyEvent1");
+  WaitForSingleObject(H, INFINITE);
+  // Обработка данных
+  ...
+  // Окончание обработки
+  SetEvent(OpenEvent(EVENT_ALL_ACCESS, TRUE, "MyEvent2"));
+\end{verbatim}
