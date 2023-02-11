@@ -1,0 +1,116 @@
+%! TEX root = ../main.tex
+
+\section{Лекция от 11.02.2023}
+\subsection{Pipe}
+\textbf{pipe} --- разделяемые участки памяти (псевдофайлы), которые используются
+для передачи данных между разными потоками или процессами. Поток, который
+создает канал, называется сервером. Потоки, которые подключаются к созданному
+каналу, называются клиентами. Для передачи данных используются функции
+\verb!ReadFile! и \verb!WriteFile!.
+Каналы бывают:
+\begin{itemize}
+  \item односторонними (полудуплексными);
+  \item двусторонними (дуплексными);
+  \item анонимными (безымянные);
+  \item именованные.
+\end{itemize} 
+
+Функция для создания канала:
+\begin{verbatim}
+  BOOL CreatePipe(
+        PHANDLE hReadHandle,
+        PHANDLE hWriteHandle,
+        SECURITY_ATTRIBUTES AttrStr,
+        DWORD dwSize 
+        )
+\end{verbatim}
+
+Для соединения клиентского потока с анонимным каналом необходимо передать
+клиенту один из дескрипторов анонимного пайпа. Передаваемый дескриптор должен
+быть наследуемым. Наследование дескрипторов анонимного канала определяется
+значением поля \verb!bInheritHandle! в структуре \verb!SECURITY_ATTRIBUTES!.
+Если значение этого поля равно \verb!TRUE!, то дескрипторы создаваемого файла
+создаются наследуемыми. Если дескрипторы анонимного канала создаются
+наследуемыми, то тот дескриптор, который не передается клиенту, должен быть
+сделан ненаследуемым и наоборот. Для этого есть функция \verb!DuplicateHandle!,
+которая создает копию дескриптора, но у этой копии меняется наследование.
+\begin{verbatim}
+  BOOL DuplicateHandle(
+          HANDLE hSourceProcessHandle,
+          HANDLE hSourceHandle,
+          HANDLE hTargetProcessHandle,
+          PHANDLE hTargeHandle,
+          DWORD dwDesiredAccess,
+          BOOL bInheritHandle,
+          DWORD dwOptions
+  )
+\end{verbatim}
+
+Передача наследуемого дескриптора клиенту может выполняться одним из следующих
+способов: 
+\begin{enumerate}
+  \item через командную строку;
+  \item через поля (\verb!hStdInput hStdOutput hStdError!);
+\end{enumerate}
+
+При создании консольного (дочернего процесса) стандартные потоки ввода/вывода
+связываются с дескрипторами, которые заданы в полях (пункт 2), для передачи
+данных по анонимному каналу можно использовать функции стандартного
+ввода/вывода. Такая процедура называется перенаправлением стандартного
+ввода/вывода
+
+Функции ввода вывода:
+\begin{verbatim}
+  BOOL WriteFile(
+        _In_ HANDLE hAnonPipe,
+        _In_ LPCVOID Buffer
+        _In_ DWORD dwNumberOfButesToWrite,
+        _Out_ LPDWORD lpNumberOfBytesWritten,
+        _OptIn_ LPOVERLAPPED lpOverLap
+  )
+\end{verbatim}
+
+\begin{verbatim}
+  BOOL ReadFile(
+        _In_ HANDLE hAnonPipe,
+        _In_ LPCVOID Buffer
+        _In_ DWORD dwNumberOfButesToRead,
+        _Out_ LPDWORD lpNumberOfBytesReaded,
+        _OptIn_ LPOVERLAPPED lpOverLap
+  )
+\end{verbatim}
+
+Чтобы закрыть канал, нужно вызвать функцию \verb!CloseHandle(...)!
+
+Порядок работы с анонимным каналом:\\
+Сервер:
+\begin{enumerate}
+  \item Создает анонимный pipe с помощью функции \verb!CreatePipe!.
+  \item Создает дубликат дескриптора, устанавливает нужное наследование с
+    помощью функции \verb!DuplicateHandle!.
+  \item Закрывает ненужный старый дескриптор.
+  \item Подготавливает входные параметры для функции \verb!CreateProcess!.
+  \item Создает дочерний процесс с помощью функции \verb!CreateProcess!, задавая
+    \verb!bInheritHandle! как TRUE, и задавая флаг создания
+    \verb!dwCreationFlags! как консольное приложение.
+  \item Закрывает дескрипторы нового процесса.
+  \item Выполняет чтение из анонимного канала.
+  \item Закрывает дескриптор чтения из канала.
+\end{enumerate}
+Клиент:
+\begin{enumerate}
+  \item Записывает данные в канал.
+  \item Закрывает дескриптор записи.
+\end{enumerate}
+
+\subsection{Синхронизация задач с помощью ожидаемых таймеров}
+Ожидаемый таймер --- объект ядра, который самостоятельно переходит в сигнальное
+состояние в определенное время или через регулярные промежутки времени. Чтобы
+создать таймер необходимо вызвать функцию 
+\begin{verbatim}
+  HANDLE CreateWaitableTimer(
+              LPSECURITY_ATTRIBUTES attributes,
+              BOOL bManualReset,
+              LPCSTR lpTimerName 
+  )
+\end{verbatim}
