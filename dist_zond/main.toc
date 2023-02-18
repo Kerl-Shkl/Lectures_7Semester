@@ -7,5 +7,15 @@
 \contentsline {paragraph}{Матричный тип организации}{3}{}%
 \contentsline {subsection}{\numberline {1.1}Корпоративные информационные системы}{3}{}%
 \contentsline {paragraph}{Признаки корпоративных информационных систем}{3}{}%
+\contentsline {paragraph}{Классификация КИС:}{4}{}%
 \contentsline {paragraph}{Ресурсы корпораций}{4}{}%
 \contentsline {paragraph}{Этапы проектирования КИС}{4}{}%
+\contentsline {section}{\numberline {2}Лекция от 16.02.2023}{5}{}%
+\contentsline {subsection}{\numberline {2.1}Система менеджмента качества}{5}{}%
+\contentsline {paragraph}{Цикл Деминга (PDCA)}{5}{}%
+\contentsline {paragraph}{Поддерживающая деятельность.}{6}{}%
+\contentsline {paragraph}{Оценочная деятельность}{6}{}%
+\contentsline {subsection}{\numberline {2.2}Концепция управления производством}{6}{}%
+\contentsline {paragraph}{Типы производства}{6}{}%
+\contentsline {paragraph}{Документирование технологического процесса}{8}{}%
+\contentsline {paragraph}{Методология автоматизации производства}{8}{}%
