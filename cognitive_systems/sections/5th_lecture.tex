@@ -1,0 +1,241 @@
+%! TEX root = ../main.tex
+
+\section{Лекция от 14.03.2023}
+
+\textbf{Графы}
+\begin{center}
+  \begin{tikzpicture}[node distance = 2.5cm]
+    \node[circle, draw=black] (top) {$c = c \cdot d$};
+    \node[circle, draw=black, below left of = top] (sl) {$c = a + b$};
+    \node[circle, draw=black, below right of = top] (sr) {$d = b + 1$};
+    \node[circle, draw=black, below of = sl, minimum size = 1.5cm] (a) {$a$};
+    \node[circle, draw=black, below of = sr, minimum size = 1.5cm] (b) {$b$};
+    \draw[arrow] (a) -- (sl);
+    \draw[arrow] (b) -- (sl);
+    \draw[arrow] (b) -- (sr);
+    \draw[arrow] (sl) -- (top);
+    \draw[arrow] (sr) -- (top);
+  \end{tikzpicture}
+\end{center}
+Пример
+\[
+  f(x_1, x_2) = 2^{x_1 x_2} - (x_1 + x_2)
+\] 
+
+\begin{center}
+  \begin{tikzpicture}[node distance = 2.5cm]
+    \node[circle, draw = black, minimum size = 1.5cm] (x1) {$x_1$};
+    \node[circle, draw = black, left of = x1, minimum size = 1.5cm] (x2) {$x_2$};
+    \node[circle, draw = black, minimum size = 1cm, above of = x1, xshift =
+      0.5cm] (b) {$b = x_1 + x_2$};
+    \node[circle, draw = black, above of = x2] (a) {$a = x_1 \cdot x_2$};
+    \node[circle, draw = black, above of = a] (c) {$c = 2^a$};
+    \node[circle, draw = black, above right of = c] (f) {$f = c -b$};
+    \draw[arrow] (x1) -- (a);
+    \draw[arrow] (x1) -- (b);
+    \draw[arrow] (x2) -- (a);
+    \draw[arrow] (x2) -- (b);
+    \draw[arrow] (a) -- (c);
+    \draw[arrow] (c) -- (f);
+    \draw[arrow] (b) -- (f);
+  \end{tikzpicture}
+\end{center}
+
+\[
+  \begin{aligned}
+    &\frac{\partial f}{\partial c}  = \frac{\partial (c-b)}{\partial c} = 1\\
+    &\frac{\partial f}{\partial b}  = \frac{\partial (c-b)}{\partial b} = -1\\
+    &\frac{\partial f}{\partial a} = \frac{\partial f}{\partial c} \frac{\partial
+      c}{\partial a} = 1 \cdot 2^{a} \ln 2\\
+    &\frac{\partial f}{\partial x_1} = \frac{\partial f}{\partial a}
+      \frac{\partiall a}{\partial x_1} + \frac{\partial f}{\partial b}
+      \frac{\partial b}{\partial x_1} = x_2 \cdot 2^a \ln 2 + -1
+    & \frac{\partial f}{\partial x_2}  = \frac{\partial f}{\partial a}
+      \frac{\partial a}{\partial x_2}  + \frac{\partial f}{\partial b}
+      \frac{\partial b}{\partial x_2} = 
+  \end{aligned}
+\]
+
+Алгоритм:
+\begin{enumerate}
+  \item Считаем частные производные по всем буквам входящим в корень
+  \item Взять узел графа $V$  такой, что для всех его узлов сверху частные
+    производные уже посчитаны.
+  \item Тогда частные производные $\frac{\partial f}{\partial V}$ считаются по
+    формуле
+    \[
+      \frac{\partial f}{\partial V} = \frac{\partial f}{\partial V_1}
+      \frac{\partial V_1}{\partial V} + \ldots \frac{\partial f}{\partial V_k}
+      \frac{\partial V_k}{\partial V} 
+    \] 
+    \[
+      \frac{\partial f}{\partial V} = \sum_{i=1}^k \frac{\partial f}{\partial
+      V_k} \frac{\partial V_k}{\partial V}  
+    \] 
+\end{enumerate}
+
+Дан граф функции $f$:
+\begin{center}
+  \begin{tikzpicture}[node distance = 2.5cm]
+    \node[circle, draw = black, minimum size = 1.5cm] (f) {$f = c^2$};
+    \node[circle, draw = black, below of = f] (c) {$c = a+b$};
+    \node[circle, draw = black, below left of = c, xshift = -1cm] (a) {$a = x_1 \cdot y_1$};
+    \node[circle, draw = black, below right of = c, xshift = 1cm] (b) {$b = x_2 \cdot y_2$};
+    \node[circle, draw = black, below left of = a, minimum size = 1.5cm] (x1) 
+      {$x_1$};
+    \node[circle, draw = black, below right of = a, minimum size = 1.5cm] (y1) 
+      {$y_1$};
+    \node[circle, draw = black, below left of = b, minimum size = 1.5cm] (x2) 
+      {$x_2$};
+    \node[circle, draw = black, below right of = b, minimum size = 1.5cm] (y2) 
+      {$y_2$};
+    \draw[arrow] (c) -- (f);
+    \draw[arrow] (a) -- (c);
+    \draw[arrow] (b) -- (c);
+    \draw[arrow] (x1) -- (a);
+    \draw[arrow] (y1) -- (a);
+    \draw[arrow] (x2) -- (b);
+    \draw[arrow] (y2) -- (b);
+  \end{tikzpicture}
+\end{center}
+
+\[
+  \begin{aligned}
+    & \frac{\partial f}{\partial c} = 2c\\
+    & \frac{\partial f}{\partial a} = \frac{\partial f}{\partial c}
+      \frac{\partial c}{\partial a}  = 2c \cdot 1 = 2c \\
+    & \frac{\partial f}{\partial b}  = \frac{\partial f}{\partial c} 
+      \frac{\partial c}{\partial b} = 2c \cdot 1 = 2c \\
+    & \frac{\partial f}{\partial x_1}  = \frac{\partial f}{\partial c} 
+      \frac{\partial c}{\partial a} \frac{\partial a}{\partial x_1} 
+      = 2c \cdot y_1 \\
+    & \frac{\partial f}{\partial y1} = 2 c x_1
+  \end{aligned}
+\] 
+
+\newpage
+\paragraph{Задания:}\mbox{}\par
+\begin{enumerate}
+  \item есть лист графа $x$ далее идут $a := 2^{x}$ $b := 3^{x}$ $c := a + b$ 
+    $d := ab$  $f := c/d$.\\
+  Найти частные производные.
+  \begin{center}
+    \begin{tikzpicture}[node distance=2.5cm]
+      \node[circle, draw=black, minimum size = 1.5cm] (x) {$x$};
+      \node[circle, draw=black, above left of=x] (a) {$a = 2^{x}$};
+      \node[circle, draw=black, above right of = x] (b) {$b = 3^{x}$};
+      \node[circle, draw=black, above of = a] (c) {$c = a+b$};
+      \node[circle, draw=black, above of = b] (d) {$d = a\cdot b$};
+      \node[circle, draw=black, above left of = d] (f) {$f=\frac{c}{d}$};
+      \draw[arrow] (x) -- (a);
+      \draw[arrow] (x) -- (b);
+      \draw[arrow] (a) -- (c);
+      \draw[arrow] (b) -- (c);
+      \draw[arrow] (a) -- (d);
+      \draw[arrow] (b) -- (d);
+      \draw[arrow] (c) -- (f);
+      \draw[arrow] (d) -- (f);
+    \end{tikzpicture}
+  \end{center}
+  \[
+    \begin{aligned}
+      & \frac{\partial f}{\partial c} = \frac{1}{d}\\
+      & \frac{\partial f}{\partial d} = -\frac{1}{d^2} \\
+      & \frac{\partial f}{\partial a} = \frac{\partial f}{\partial c}
+        \frac{\partial c}{\partial a} + \frac{\partial f}{\partial d}
+        \frac{\partial d}{\partial a} = \frac{1}{d} \cdot 1 - \frac{1}{d^2}
+        \cdot b = \frac{d-1}{d^2} \\
+      & \frac{\partial f}{\partial b} = \frac{\partial f}{\partial c} 
+        \frac{\partial c}{\partial b} + \frac{\partial f}{\partial d} 
+        \frac{\partial d}{\partial b} = \frac{1}{d}\cdot 1 - \frac{1}{d^2} a = 
+        \frac{d - a}{d^2} \\
+      & \frac{\partial f}{\partial x} = \frac{\partial f}{\partial a} 
+        \frac{\partial a}{\partial x} + \frac{\partial f}{\partial b} 
+        \frac{\partial b}{\partial x} = \frac{d-1}{d^2} \cdot 2^{x}\ln2 + 
+        \frac{d-a}{d^2} 3^{x} \ln3 
+    \end{aligned}
+  \] 
+
+  \item $x_1$  $x_2$  $a = x_1 \cdot x_2$  $b = x_1 + x_2$  $c = ab$  $d = a+b$ 
+    $f = c^2 + d^2$
+
+    \begin{center}
+      \begin{tikzpicture}[node distance = 2cm]
+        \node[ellipse, draw=black] (f) {$f = c^2 + d^2$}; 
+        \node[ellipse, draw=black, below left of = f] (d) {$d = a+b$};
+        \node[ellipse, draw=black, below right of = f] (c) {$c = a\cdot b$};
+        \node[ellipse, draw=black, below of = d, xshift=-0.5cm] (a) 
+          {$a=x_1 \cdot x_2$};
+        \node[ellipse, draw=black, below of = c, xshift=0.5cm] (b) 
+          {$b = x_1 + x_2$};
+        \node[ellipse, draw=black, below of = a, minimum size = 1cm] (x1) {$x_1$};
+        \node[ellipse, draw=black, below of = b, minimum size = 1cm] (x2) {$x_2$};
+        \draw[arrow] (x1) -- (a);
+        \draw[arrow] (x1) -- (b);
+        \draw[arrow] (x2) -- (a);
+        \draw[arrow] (x2) -- (b);
+        \draw[arrow] (a) -- (c);
+        \draw[arrow] (a) -- (d);
+        \draw[arrow] (b) -- (c);
+        \draw[arrow] (b) -- (d);
+        \draw[arrow] (d) -- (f);
+        \draw[arrow] (c) -- (f);
+      \end{tikzpicture} 
+    \end{center}
+    \[
+      \begin{aligned}
+      & \frac{\partial f}{\partial d} = 2d \\
+      & \frac{\partial f}{\partial c} = 2c \\
+      & \frac{\partial f}{\partial a} = \frac{\partial f}{\partial d} 
+        \frac{\partial d}{\partial a} + \frac{\partial f}{\partial c} 
+        \frac{\partial c}{\partial a} = 2d \cdot 1 + 2c \cdot b \\
+      & \frac{\partial f}{\partial b} = \frac{\partial f}{\partial d} 
+      \frac{\partial d}{\partial b} + \frac{\partial f}{\partial c} 
+      \frac{\partial c}{\partial b}  = 2d \cdot 1 + 2c \cdot a \\
+      & \frac{\partial f}{\partial x_1} = \frac{\partial f}{\partial a} 
+        \frac{\partial a}{\partial x_1} + \frac{\partial f}{\partial b}
+        \frac{\partial b}{\partial x_1} = (2d + 2cb) \cdot (x_2) +
+        (2d + 2ca) \cdot (1) = 28 \\
+      & \frac{\partial f}{\partial x_2} = \frac{\partial f}{\partial a} 
+      \frac{\partial a}{\partial x_2} + \frac{\partial f}{\partial b} 
+      \frac{\partial b}{\partial x_2} = (2d + 2c b)\cdot (x_1) + 
+      (2d + 2ca) = 24
+      \end{aligned}
+    \] 
+\end{enumerate}
+
+
+\newpage
+\paragraph{Сигмоида}\mbox{}\par
+Раньше сигмойда хайповала. Руки-базуки того времени.
+\[
+  \sigma(x) = \frac{e^{x}}{1 + e^{x}}
+\] 
+\[
+  \sigma'(x) = \sigma(x) (1-\sigma(x)) 
+\] 
+Производная суперпозиции сигмойды
+\[
+  (\sigma(\sigma(x)))' = \sigma(\sigma(x)) (1-\sigma(\sigma(x)))\cdot
+  \sigma(x)(1 - \sigma(x))
+\] 
+\[
+  (\sigma(\sigma(\sigma(x))))' =
+  \sigma(\sigma(\sigma(x)))(1-\sigma(\sigma(\sigma(x)))) \cdot
+  (\sigma(\sigma(x)))'
+\] 
+При большом количестве производных сигмойда выраждается в ноль. (чем больше
+слоев, тем больше производных)
+
+Задание:\par
+В точке $x = 0$. Найти 
+\[
+  \begin{aligned}
+    & \sigma(0) = \frac{e^{0}}{1 + e^{0}} = 0.5 \\
+    & \sigma'(0) = \sigma(0)(1-\sigma(0)) = 0.25 \\
+    & \sigma'(\sigma(0)) = \sigma(\sigma(0)) (1 - \sigma(\sigma(0))) \cdot
+      \sigma'(0) = \frac{e^{0.5}}{1+e^{0.5}} (1 - \frac{e^{0.5}}{1 + e^{0.5}}) 
+      \cdot 0.25 = 0.235 \\
+    & \sigma'(\sigma(\sigma(0))) = 0.227
+  \end{aligned}
+\] 

@@ -1,0 +1,134 @@
+%! TEX root = ../main.tex
+
+\section{Лекция от 09.03.2023}
+\subsection{Концепция управления проектированием и разработкой (Research \&
+  Development)}
+
+\textbf{НИОКР} --- полный цикл проектирования. Комплекс мероприятий, включающий
+в себя как научные исследования так и производство опытных и мелоксерийных
+образцов продукции, предшествующий запуску нового продукта в прошленное
+производство.
+
+\textbf{Научно-исследовательские работы}(НИР) --- работы поискового,
+теоретического и экспериментального характера, выполняемые с целью определения
+технической возможности создания новой техники в определенные сроки.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \node[block] (nir) {НИР};
+    \node[block, below left of = nir, yshift=-1cm, xshift=-1cm] (pr) 
+      {Прикладное};
+    \node[block, below right of = nir, yshift=-1cm, xshift=1cm] (teor) 
+      {Теоретичское};
+    \draw[arrow] (nir) -- (pr);
+    \draw[arrow] (nir) -- (teor);
+  \end{tikzpicture}
+\end{figure}
+
+\textbf{Опытно-конструкторские работы} (ОКР) --- комплекс работ по разработке
+конструкторской и технологической документации на опытный образец.
+
+\paragraph{Жизненный цикл иделия}\mbox{}\par
+\begin{enumerate}
+  \item НИР
+  \item Техническое предложение
+  \item ТЗ на ОКР
+  \item ОКР
+  \item Разработка и изготовление опытных образцов
+  \item Испытание и контроль
+  \item Технологическая подготовка
+  \item Произовдство
+  \item Эксплуатация, ремонт
+  \item Утилизация
+\end{enumerate}
+
+\paragraph{Этапы оптыно-конструкторских работ}
+\begin{center}
+  \begin{tikzpicture}[node distance = 1.5cm]
+    \node[process] (p1) {ТЗ на ОКР}; 
+    \node[process, below of = p1] (p2) {ТЗ на составные части ОКР};
+    \node[process, below of = p2] (p3) {Эскизный проект};
+    \node[process, below of = p3] (p4) {Технический проект};
+    \node[process, below of = p4] (p5) {Разработка рабочей документации};
+    \node[process, below of = p5, yshift=-0.5cm, fill=yellow!90!black] (p6) 
+      {Изготовление и испытания опытных образцов};
+    \node[process, right of = p3, xshift = 4cm, fill=green!90!black] (l1)
+      {Проектирование};
+    \node[process, right of = p5, xshift = 4cm, yshift=1cm, fill=red!90!black] (l2) 
+      {Конструирование};
+    \draw[arrow] (p1) -- (p2);
+    \draw[arrow] (p2) -- (p3);
+    \draw[arrow] (p3) -- (p4);
+    \draw[arrow] (p4) -- (p5);
+    \draw[arrow] (p5) -- (p6);
+    \draw[arrow] (l1.180) -- (p2.0);
+    \draw[arrow] (l1) -- (p3);
+    \draw[arrow] (l1.180) -- (p4.0);
+    \draw[arrow] (l2.180) -- (p4.0);
+    \draw[arrow] (l2.180) -- (p5.0);
+  \end{tikzpicture}
+\end{center}
+  
+\paragraph{Рабочая документация}\mbox{}\par
+Изначально производится разработка рабочей документации на изготовление и
+испытание опытного образца, формирование комплекта конструкторских документов в
+следующей послдеовательности.
+
+\paragraph{Схемы}
+\begin{itemize}
+  \item По типу
+    \begin{enumerate}
+      \item Общие
+      \item Функциональные
+      \item Принципиальные
+      \item Соединений
+      \item Подключений
+    \end{enumerate}
+  \item По характеру
+    \begin{enumerate}
+      \item Электрические
+      \item Кинематические
+      \item Гидравлические
+      \item Пневматические
+    \end{enumerate}
+\end{itemize}
+
+\paragraph{Испытание и доводка}
+Предварительные испытания производятся с целью проеверки соответствия опытного
+образца требованиям ТЗ и определения возможности его появления на окончательные
+(государственные, ведомственные или внутрикорпоративные испытания).
+Предварительные испытания включают в себя:
+\begin{itemize}
+  \item предъявительские испытания;
+  \item приемо-сдаточные испытания;
+  \item предварительные испытания.
+\end{itemize}
+
+\paragraph{Эволюция стандартов планирования}\mbox{}\par
+\begin{enumerate}
+  \item MRP (Material Resource Planning)
+  \item MRPII (Manufacturing Resource Planning)
+  \item ERP (Enterprise Resource Planning)
+  \item CSRP (Customer Synchronized Resource Planning)
+  \item S. PLM
+\end{enumerate}
+
+MRP --- методология планирования потребностей в материалах. Суть в том, чтобы
+минимизировать издержки, связанные со складскими запасами и на различных
+участках в производстве.\par
+
+Задачи MRP
+\begin{enumerate}
+  \item Минимизация запасов сырья.
+  \item Оптимизировать поступление материалов и комплектующих в производство
+  \item Исключить простои оборудования
+\end{enumerate}
+
+Недостатки MRP
+\begin{enumerate}
+  \item Отсутствие контрля выполнения плана закупок и механизма корректировки
+    этого плана в случае возникновения ситуаций, мешающих его нормальному
+    исполнению.
+  \item Ограниченный учет производственных факторов.
+\end{enumerate}

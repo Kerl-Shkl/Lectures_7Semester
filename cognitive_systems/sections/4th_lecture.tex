@@ -1,0 +1,83 @@
+%! TEX root = ../main.tex
+
+\section{Лекция от 07.03.2023}
+Сложная функция
+\[
+  h(x) = f(g(x))
+\] 
+\[
+  h'(x) = f'(g(x)) \cdot g'(x)
+\] 
+Примеры:
+\begin{enumerate}
+  \item 
+    \[
+      h(x) = e^{x^{2}}
+    \] 
+    \[
+      h'(x) = e^{x^{2}} \cdot 2x
+    \] 
+  \item 
+    \[
+      h(x) = \frac{1}{\sin x}
+    \] 
+    \[
+      h'(x) = - \frac{\cos x}{\sin^2 x}
+    \] 
+\end{enumerate}
+
+Рекурсивное вычисление производной.
+\[
+  h(x) = f(g(x)); \qquad g(x) = g_1(g_2(x))
+\] 
+\[
+  h'(x) = f'(g(x)) \cdot g_1'(g_2(x)) \cdot g_2'(x)
+\] 
+Пример:
+\[
+  h(x) = \sin(\cos(x^2))
+\] 
+\[
+  h'(x) = \cos(\cos(x^2)) \cdot  (-\sin(x^2)) \cdot 2x 
+\] 
+
+Частные производные:
+\[
+  \frac{\partial f}{\partial x_1} = \frac{\partial f}{\partial g_1} \, 
+  \frac{\partial g_1}{\partial x_1} + \frac{\partial f}{\partial g_2} \, 
+  \frac{\partial g_2}{\partial x_1} 
+\] 
+\[
+  \frac{\partial f}{\partial x_2} = \frac{\partial f}{\partial g_1} \, 
+  \frac{\partial g_1}{\partial x_2} + \frac{\partial f}{\partial g_2} \, 
+  \frac{\partial g_2}{\partial x_2} 
+\] 
+
+Домашняя работа:
+\begin{enumerate}
+  \item Вывести частные производные для
+    \[
+      f(x_1, \ldots, x_m), g_1(x_1 \ldots, x_n), \ldots, g_m(x_1, \ldots, x_n)
+    \] 
+  \item Найти производную сложной функции и найти ответ
+    \[
+      f(g_1, g_2) = \frac{g_1}{g_2}; \qquad g_1(x_1, x_2) = x_1 + x_2; \qquad 
+      g_2(x_1, x_2) = x_1 x_2
+    \] 
+    \[
+      \frac{\partial f}{\partial x_2} (1, 2)
+    \] 
+  \item 
+    \[
+      f(g_1, g_2, g_3) = g_1 g_2 g_3
+    \] 
+    где $g_1 = x_2 + x_3$, $g_2 = x_1 + x_3$, $g_3 = x_1 + x_2$
+    \[
+      \frac{\partial f}{\partial x_3} (1, 2, 3)
+    \]
+  \item 
+    \[
+      f(g_1, g_2) = g_1^{g_2}
+    \] 
+    где $g_1(x) = x$, $g_2(x) = x$
+\end{enumerate}
