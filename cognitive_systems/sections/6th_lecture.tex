@@ -1,0 +1,68 @@
+%! TEX root = ../main.tex
+
+\section{Лекция от 28.03.2023}
+Нейрон должен обладать входом и выходом, а также силой связи с соседними
+нейронами. Также должна быть функция активации, и она должна быть простой.
+Общая формула искусственного нейрона:
+\begin{center}
+  \begin{tikzpicture}[node distance = 2cm]
+    \node[circle, draw = black] (s) {$S$};
+    \node[circle, draw=black, minimum size=0.5cm, right of = s] (out) {};
+  \end{tikzpicture}
+\end{center}
+\[
+  S = \sum_{i=1}^{n} X_i \omega_i + \omega_0
+\] 
+\[
+  step(x) = \left\{\begin{aligned} 
+    &1, x > 0 \\
+    &0, x \le 0
+  \end{aligned}\right. 
+\] 
+\begin{center}
+  \begin{tikzpicture}[node distance = 3cm]
+    \node[block] (n) {$+\omega_0$}; 
+    \node[left of = n] (l) {$x$};
+    \node[right of = n] (r) {Выход};
+    \draw[arrow] (l) -- node[anchor=south]{$ \omega $} (n);
+    \draw[arrow] (n) -- node[anchor=south]{$f$} (r);
+  \end{tikzpicture}
+\end{center}
+
+Сигмойда:
+\[
+  \sigma = \frac{e^{x}}{1 + e^{x}}
+\] 
+
+Гиперболический тангенс:
+\[
+  th(x) = \frac{sh(x)}{ch(x)} = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}
+\] 
+
+ReLU:
+\[
+  a  
+\] 
+
+Пример искусственного нейрона:
+\begin{center}
+  \begin{tikzpicture}[node distance = 3cm]
+    \node[block] (n) {$ \omega _0$}; 
+    \node[rectangle, draw, left of = n] (x1) {$x_1$};
+    \node[right of = n] (out) {Выход};
+    \node[rectangle, draw, below of = x1, yshift=2cm] (x2) {$x_2$};
+    \draw[arrow] (x1) -- node[anchor=south]{$\omega$}(n);
+    \draw[arrow] (n) -- node[anchor=south]{$f$}(out);
+    \draw[arrow] (x2) -- (n);
+  \end{tikzpicture}
+\end{center}
+
+{\Huge\textbf{Нейронные сети}}
+
+Задача:\par
+
+
+План решения регрессии для нейросети:
+\begin{enumerate}
+  \item Взять тренировочную выборку
+\end{enumerate}
